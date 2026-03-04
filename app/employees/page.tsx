@@ -1,4 +1,21 @@
-export default function Employees() {
+import { ApiUsers } from "./types";
+
+async function getEmployees(): Promise<ApiUsers> {
+  const res = await fetch("https://jsonplaceholder.typicode.com/users", {
+    // Opcional: controla cache en Next
+    next: { revalidate: 60 },
+  });
+
+  if (!res.ok) {
+    throw new Error(`Error HTTP: ${res.status}`);
+  }
+
+  const data: ApiUsers = await res.json();
+  return data;
+}
+
+export default async function Employees() {
+  const employees = await getEmployees();
   return (
     <div>
       {/* Contenido principal */}
@@ -6,6 +23,14 @@ export default function Employees() {
         <h2 className="text-2xl font-bold text-gray-900">
           Listado de empleados
         </h2>
+        <ul className="space-y-2">
+          {employees.map((emp) => (
+            <li key={emp.id} className="border rounded p-3">
+              <p className="font-semibold">{emp.name}</p>
+              <p className="text-sm text-gray-600">{emp.email}</p>
+            </li>
+          ))}
+        </ul>
       </main>
     </div>
   );
