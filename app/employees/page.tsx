@@ -1,21 +1,10 @@
 import { ApiUsers } from "./types";
-
-async function getEmployees(): Promise<ApiUsers> {
-  const res = await fetch("https://jsonplaceholder.typicode.com/users", {
-    // Opcional: controla cache en Next
-    next: { revalidate: 60 },
-  });
-
-  if (!res.ok) {
-    throw new Error(`Error HTTP: ${res.status}`);
-  }
-
-  const data: ApiUsers = await res.json();
-  return data;
-}
+import { fetchJson } from "@/lib/api";
 
 export default async function Employees() {
-  const employees = await getEmployees();
+  const employees = await fetchJson<ApiUsers>(
+    "https://jsonplaceholder.typicode.com/users",
+  );
   return (
     <div>
       {/* Contenido principal */}
