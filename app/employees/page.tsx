@@ -1,5 +1,6 @@
 import { ApiUsersResponse, EmployeesPageProps } from "./types";
 import { fetchJson } from "@/lib/api";
+import Link from "next/link";
 
 export default async function Employees({ searchParams }: EmployeesPageProps) {
   const params = await searchParams;
@@ -19,30 +20,57 @@ export default async function Employees({ searchParams }: EmployeesPageProps) {
   const hasNext = currentPage < totalPages;
 
   return (
-    <div>
+    <main className="max-w-7xl mx-auto px-4 py-10">
       {/* Contenido principal */}
-      <main className="max-w-7xl mx-auto px-4 py-10">
-        <h2 className="text-2xl font-bold text-gray-900">
-          Listado de empleados
-        </h2>
+      <h2 className="text-2xl font-bold text-gray-900">Listado de empleados</h2>
 
-        <ul className="space-y-2">
-          {employees.users.length === 0 ? (
-            <li className="text-sm text-gray-500">
-              No hay empleados en esta página.
+      <ul className="space-y-2">
+        {employees.users.length === 0 ? (
+          <li className="text-sm text-gray-500">
+            No hay empleados en esta página.
+          </li>
+        ) : (
+          employees.users.map((user) => (
+            <li key={user.id} className="border rounded p-3">
+              <p className="font-semibold">
+                {user.firstName} {user.lastName}
+              </p>
+              <p className="text-sm text-gray-600"> {user.email}</p>
             </li>
-          ) : (
-            employees.users.map((user) => (
-              <li key={user.id} className="border rounded p-3">
-                <p className="font-semibold">
-                  {user.firstName} {user.lastName}
-                </p>
-                <p className="text-sm text-gray-600"> {user.email}</p>
-              </li>
-            ))
-          )}
-        </ul>
-      </main>
-    </div>
+          ))
+        )}
+      </ul>
+      <div className="mt-6 flex items-center gap-3">
+        {hasPrev ? (
+          <Link
+            href={`/employees?page=${currentPage - 1}`}
+            className="px-3 py-2 border rounded text-sm"
+          >
+            Anterior
+          </Link>
+        ) : (
+          <span className="px-3 py-2 border rounded text-sm text-gray-400 cursor-not-allowed">
+            Anterior
+          </span>
+        )}
+
+        <span className="text-sm text-gray-700">
+          Página {currentPage} de {totalPages}
+        </span>
+
+        {hasNext ? (
+          <Link
+            href={`/employees?page=${currentPage + 1}`}
+            className="px-3 py-2 border rounded text-sm"
+          >
+            Siguiente
+          </Link>
+        ) : (
+          <span className="px-3 py-2 border rounded text-sm text-gray-400 cursor-not-allowed">
+            Siguiente
+          </span>
+        )}
+      </div>
+    </main>
   );
 }
