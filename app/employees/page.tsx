@@ -1,9 +1,9 @@
-import { ApiUsers } from "./types";
+import { ApiUsersResponse } from "./types";
 import { fetchJson } from "@/lib/api";
 
 export default async function Employees() {
-  const employees = await fetchJson<ApiUsers>(
-    "https://jsonplaceholder.typicode.com/users",
+  const employees = await fetchJson<ApiUsersResponse>(
+    "https://dummyjson.com/users?limit=8&skip=0",
   );
   return (
     <div>
@@ -13,10 +13,12 @@ export default async function Employees() {
           Listado de empleados
         </h2>
         <ul className="space-y-2">
-          {employees.map((emp) => (
-            <li key={emp.id} className="border rounded p-3">
-              <p className="font-semibold">{emp.name}</p>
-              <p className="text-sm text-gray-600">{emp.email}</p>
+          {employees.users.map((user) => (
+            <li key={user.id} className="border rounded p-3">
+              <p className="font-semibold">
+                {user.firstName} {user.lastName}
+              </p>
+              <p className="text-sm text-gray-600"> {user.email}</p>
             </li>
           ))}
         </ul>
