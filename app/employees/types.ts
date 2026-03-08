@@ -82,3 +82,9 @@ export type ApiUsersResponse = {
   skip: number;
   limit: number;
 };
+
+export type EmployeesPageProps = {
+  searchParams: Promise<{
+    page?: string;
+  }>;
+};
