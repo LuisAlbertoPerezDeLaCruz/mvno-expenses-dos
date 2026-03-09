@@ -76,6 +76,26 @@ export type ApiUser = {
   role: string;
 };
 
+export type UpdateUserPayload = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  username: string;
+  address: {
+    address: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+  };
+  company: {
+    name: string;
+    department: string;
+    title: string;
+  };
+};
+
 export type ApiUsersResponse = {
   users: ApiUser[];
   total: number;
