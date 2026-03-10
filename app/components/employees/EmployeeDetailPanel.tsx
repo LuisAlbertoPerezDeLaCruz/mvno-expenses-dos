@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { ApiUser, UpdateUserPayload } from "@/app/employees/types";
 import EmployeeDetail from "@/app/components/employees/EmployeeDetail";
 import EmployeeForm from "@/app/components/employees/EmployeeForm";
+import Button from "@/app/components/ui/Button";
 
 type Props = {
   user: ApiUser;
@@ -34,15 +35,9 @@ export default function EmployeeDetailPanel({ user }: Props) {
         </h1>
 
         {!isEditing && (
-          <button
-            type="button"
-            onClick={() => setIsEditing(true)}
-            className="px-3 py-2 border rounded text-sm"
-            title="Editar empleado"
-            aria-label="Editar empleado"
-          >
+          <Button variant="ghost" onClick={() => setIsEditing(true)}>
             ✏️ Editar
-          </button>
+          </Button>
         )}
       </div>
 

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { ApiUser, UpdateUserPayload } from "@/app/employees/types";
+import Button from "@/app/components/ui/Button";
 
 type EmployeeFormProps = {
   user: ApiUser;
@@ -92,21 +93,18 @@ export default function EmployeeForm({
           </label>
         </div>
         <div className="flex items-center justify-between">
-          <button
-            type="button"
-            onClick={onCancel}
-            className="px-3 py-2 border rounded text-sm bg-red-500 text-white"
-            disabled={isSaving}
-          >
+          <Button variant="danger" onClick={onCancel} disabled={isSaving}>
             Cancelar
-          </button>
-          <button
+          </Button>
+          <Button
             type="submit"
-            className="px-3 py-2 border rounded text-sm bg-emerald-500 text-white"
+            variant="primary"
+            onClick={() => onSave(form)}
             disabled={isSaving}
+            isLoading={isSaving}
           >
-            {isSaving ? "Guardando..." : "Guardar"}
-          </button>
+            Guardar
+          </Button>
         </div>
       </section>
     </form>
