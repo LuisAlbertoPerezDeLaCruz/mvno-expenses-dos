@@ -10,6 +10,8 @@ type ButtonProps = {
   variant?: ButtonVariant;
   size?: ButtonSize;
   isLoading?: boolean;
+  leftIcon?: ReactNode;
+  rightIcon?: ReactNode;
   className?: string;
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
@@ -48,6 +50,8 @@ export default function Button({
   isLoading = false,
   disabled,
   className = "",
+  leftIcon,
+  rightIcon,
   type = "button",
   ...props
 }: ButtonProps) {
@@ -66,7 +70,13 @@ export default function Button({
       ].join(" ")}
       {...props}
     >
-      {isLoading ? "Cargando..." : children}
+      {!isLoading && leftIcon ? (
+        <span className="inline-flex pe-1">{leftIcon}</span>
+      ) : null}
+      <span>{isLoading ? "Cargando..." : children}</span>
+      {!isLoading && rightIcon ? (
+        <span className="inline-flex">{rightIcon}</span>
+      ) : null}
     </button>
   );
 }

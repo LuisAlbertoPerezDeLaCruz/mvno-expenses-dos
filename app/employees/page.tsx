@@ -1,5 +1,6 @@
 import { ApiUsersResponse, EmployeesPageProps } from "./types";
 import { fetchJson } from "@/lib/api";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 
 export default async function Employees({ searchParams }: EmployeesPageProps) {
@@ -44,13 +45,15 @@ export default async function Employees({ searchParams }: EmployeesPageProps) {
         {hasPrev ? (
           <Link
             href={`/employees?page=${currentPage - 1}`}
-            className="px-3 py-2 border rounded text-sm"
+            className="inline-flex items-center gap-1 px-3 py-2 border rounded text-sm"
           >
-            Anterior
+            <ChevronLeft size={16} />
+            <span>Anterior</span>
           </Link>
         ) : (
-          <span className="px-3 py-2 border rounded text-sm text-gray-400 cursor-not-allowed">
-            Anterior
+          <span className="inline-flex items-center gap-1 px-3 py-2 border rounded text-sm text-gray-400 cursor-not-allowed">
+            <ChevronLeft size={16} />
+            <span>Anterior</span>
           </span>
         )}
 
@@ -61,13 +64,15 @@ export default async function Employees({ searchParams }: EmployeesPageProps) {
         {hasNext ? (
           <Link
             href={`/employees?page=${currentPage + 1}`}
-            className="px-3 py-2 border rounded text-sm"
+            className="inline-flex items-center gap-1 px-3 py-2 border rounded text-sm"
           >
-            Siguiente
+            <span>Siguiente</span>
+            <ChevronRight size={16} />
           </Link>
         ) : (
-          <span className="px-3 py-2 border rounded text-sm text-gray-400 cursor-not-allowed">
-            Siguiente
+          <span className="inline-flex items-center gap-1 px-3 py-2 border rounded text-sm text-gray-400 cursor-not-allowed">
+            <span>Siguiente</span>
+            <ChevronRight size={16} />
           </span>
         )}
       </div>

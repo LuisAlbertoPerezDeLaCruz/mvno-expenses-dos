@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { ApiUser, UpdateUserPayload } from "@/app/employees/types";
 import Button from "@/app/components/ui/Button";
+import { Upload, X } from "lucide-react";
 
 type EmployeeFormProps = {
   user: ApiUser;
@@ -93,7 +94,12 @@ export default function EmployeeForm({
           </label>
         </div>
         <div className="flex items-center justify-between">
-          <Button variant="danger" onClick={onCancel} disabled={isSaving}>
+          <Button
+            variant="danger"
+            leftIcon={<X size={16} />}
+            onClick={onCancel}
+            disabled={isSaving}
+          >
             Cancelar
           </Button>
           <Button
@@ -102,6 +108,7 @@ export default function EmployeeForm({
             onClick={() => onSave(form)}
             disabled={isSaving}
             isLoading={isSaving}
+            leftIcon={<Upload size={16} />}
           >
             Guardar
           </Button>

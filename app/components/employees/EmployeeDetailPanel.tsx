@@ -5,6 +5,7 @@ import type { ApiUser, UpdateUserPayload } from "@/app/employees/types";
 import EmployeeDetail from "@/app/components/employees/EmployeeDetail";
 import EmployeeForm from "@/app/components/employees/EmployeeForm";
 import Button from "@/app/components/ui/Button";
+import { Pencil } from "lucide-react";
 
 type Props = {
   user: ApiUser;
@@ -35,8 +36,12 @@ export default function EmployeeDetailPanel({ user }: Props) {
         </h1>
 
         {!isEditing && (
-          <Button variant="ghost" onClick={() => setIsEditing(true)}>
-            ✏️ Editar
+          <Button
+            variant="ghost"
+            leftIcon={<Pencil size={16} />}
+            onClick={() => setIsEditing(true)}
+          >
+            Editar
           </Button>
         )}
       </div>
