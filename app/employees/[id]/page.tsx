@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { fetchJson } from "@/lib/api";
 import type { ApiUser } from "../types";
+import EmployeeDetail from "@/app/components/employees/EmployeeDetail";
 
 type EmployeeDetailPageProps = {
   params: Promise<{ id: string }>;
@@ -32,14 +33,9 @@ export default async function EmployeeDetailPage({
   return (
     <main className="max-w-7xl mx-auto px-4 py-10">
       <h1 className="text-2xl font-bold text-gray-900 mb-4">
-        Detalle del empleado
+        Empleado #{user.id}
       </h1>
-      <div className="border rounded p-4">
-        <p className="font-semibold">
-          {user.firstName} {user.lastName}
-        </p>
-        <p className="text-sm text-gray-600">{user.email}</p>
-      </div>
+      <EmployeeDetail user={user} />
     </main>
   );
 }
