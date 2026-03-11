@@ -33,9 +33,11 @@ export default async function Employees({ searchParams }: EmployeesPageProps) {
         ) : (
           employees.users.map((user) => (
             <li key={user.id} className="border rounded p-3">
-              <p className="font-semibold">
-                {user.firstName} {user.lastName}
-              </p>
+              <Link href={`/employees/${user.id}`} className="text-blue-600 underline hover:text-blue-800">
+                <p className="font-semibold">
+                  {user.firstName} {user.lastName}
+                </p>
+              </Link>
               <p className="text-sm text-gray-600"> {user.email}</p>
             </li>
           ))
