@@ -14,16 +14,27 @@ type Props = {
 export default function EmployeeDetailPanel({ user }: Props) {
   const [isEditing, setIsEditing] = useState(false);
   const [currentUser, setCurrentUser] = useState<ApiUser>(user);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSave(payload: UpdateUserPayload) {
-    // aquí luego llamas update API
-    // por ahora simulas éxito y actualizas UI local:
-    await new Promise((resolve) => setTimeout(resolve, 1200));
+    setError(null);
+    const res = await fetch(`https://dummyjson.com/users/${currentUser.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      setError(`Error al guardar: ${res.status} ${res.statusText}`);
+      return;
+    }
+
+    const updated: ApiUser = await res.json();
     setCurrentUser((prev) => ({
       ...prev,
-      ...payload,
-      address: { ...prev.address, ...payload.address },
-      company: { ...prev.company, ...payload.company },
+      ...updated,
+      address: { ...prev.address, ...updated.address },
+      company: { ...prev.company, ...updated.company },
     }));
     setIsEditing(false);
   }
@@ -45,6 +56,10 @@ export default function EmployeeDetailPanel({ user }: Props) {
           </Button>
         )}
       </div>
+
+      {error && (
+        <p className="text-sm text-red-600">{error}</p>
+      )}
 
       {isEditing ? (
         <EmployeeForm

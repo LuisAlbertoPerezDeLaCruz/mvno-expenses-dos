@@ -105,7 +105,6 @@ export default function EmployeeForm({
           <Button
             type="submit"
             variant="primary"
-            onClick={() => onSave(form)}
             disabled={isSaving}
             isLoading={isSaving}
             leftIcon={<Upload size={16} />}
