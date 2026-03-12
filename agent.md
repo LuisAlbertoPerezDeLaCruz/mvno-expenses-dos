@@ -90,3 +90,14 @@
   - `PGHOST`, `PGPORT`, `PGUSER`, `PGPASSWORD`, `PGDATABASE`
 - Current code default database fallback is:
   - `racksenvios`
+
+## Stop Dev Run
+- If `npm run dev` is running in the current terminal:
+  - press `Ctrl + C`
+- If the process is running in background and terminal is unknown:
+  - `pkill -f "next dev"`
+- If you need PID-level control:
+  - `lsof -i :3000`
+  - `kill <PID>`
+- If app was started from an internal Codex session:
+  - stop it by sending `Ctrl + C` to that session (`write_stdin` with `\u0003`).
