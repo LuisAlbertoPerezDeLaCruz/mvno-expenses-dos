@@ -12,6 +12,9 @@ export default function Header() {
           <Link href="/employees" className="text-gray-600 hover:text-blue-600">
             Empleados
           </Link>
+          <Link href="/postal-codes" className="text-gray-600 hover:text-blue-600">
+            Codigos postales
+          </Link>
         </nav>
       </div>
     </header>

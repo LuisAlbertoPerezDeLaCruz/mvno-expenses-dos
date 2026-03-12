@@ -71,3 +71,22 @@
   - open detail
   - toggle edit
   - save/cancel behavior
+
+## Run Dev
+- Install dependencies:
+  - `npm install`
+- Start development server:
+  - `npm run dev`
+- Default local URL:
+  - `http://localhost:3000`
+- If port `3000` is in use, run on another port:
+  - `npm run dev -- --port 3001`
+
+### Environment for Postal Codes
+- Postal code module (`/postal-codes`) requires PostgreSQL connection.
+- Preferred env var:
+  - `DATABASE_URL=postgresql://<user>:<password>@<host>:<port>/racksenvios`
+- Alternative env vars:
+  - `PGHOST`, `PGPORT`, `PGUSER`, `PGPASSWORD`, `PGDATABASE`
+- Current code default database fallback is:
+  - `racksenvios`
