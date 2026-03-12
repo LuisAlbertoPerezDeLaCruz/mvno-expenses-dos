@@ -49,252 +49,390 @@ export default async function PostalCodesPage({
   const hasPrev = result.page > 1;
   const hasNext = result.page < result.totalPages;
 
+  const hasActiveFilters = !!(
+    filters.estado ||
+    filters.colonia ||
+    filters.ciudad ||
+    filters.codigoPostal ||
+    filters.nombre
+  );
+
   return (
     <main
-      className={`${titleFont.variable} ${bodyFont.variable} max-w-7xl mx-auto px-4 py-10`}
+      className={`${titleFont.variable} ${bodyFont.variable}`}
       style={
         {
-          "--pc-bg": "#fcf8ef",
-          "--pc-card": "#fffdf8",
-          "--pc-line": "#d9cdb4",
-          "--pc-ink": "#1d1a16",
+          "--pc-bg": "#faf6ec",
+          "--pc-card": "#fffef9",
+          "--pc-line": "#ddd0b0",
+          "--pc-line-light": "#ede5cc",
+          "--pc-ink": "#1a1714",
           "--pc-accent": "#0b5e3d",
-          "--pc-accent-2": "#9f2d1f",
-          "--pc-muted": "#6a6257",
+          "--pc-accent-hover": "#094d33",
+          "--pc-accent-2": "#8c2418",
+          "--pc-muted": "#6b5e4e",
+          "--pc-muted-light": "#9e9080",
+          "--pc-stamp": "#f0ebe0",
+          minHeight: "100vh",
+          backgroundColor: "var(--pc-bg)",
+          fontFamily: "var(--font-postal-body)",
         } as CSSProperties
       }
     >
-      <section className="relative overflow-hidden rounded-2xl border border-[var(--pc-line)] bg-[var(--pc-bg)] p-6 md:p-8">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -left-20 -top-20 h-52 w-52 rounded-full bg-[var(--pc-accent)]/8 blur-2xl" />
-          <div className="absolute -right-20 bottom-0 h-56 w-56 rounded-full bg-[var(--pc-accent-2)]/10 blur-2xl" />
-        </div>
+      <style>{`
+        .pc-input {
+          width: 100%;
+          background: var(--pc-card);
+          border: 1.5px solid var(--pc-line);
+          border-radius: 6px;
+          padding: 9px 12px;
+          color: var(--pc-ink);
+          font-family: var(--font-postal-body);
+          font-size: 0.875rem;
+          outline: none;
+          transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .pc-input:focus {
+          border-color: var(--pc-accent);
+          box-shadow: 0 0 0 3px rgba(11, 94, 61, 0.1);
+        }
+        .pc-input::placeholder {
+          color: var(--pc-muted-light);
+        }
+        .pc-row {
+          transition: background-color 0.1s;
+        }
+        .pc-row:hover {
+          background-color: rgba(11, 94, 61, 0.04) !important;
+        }
+        .pc-row:hover .pc-badge {
+          background-color: var(--pc-accent);
+          color: white;
+        }
+        .pc-badge {
+          display: inline-block;
+          font-family: 'Courier New', monospace;
+          font-size: 0.8rem;
+          font-weight: 700;
+          letter-spacing: 0.05em;
+          padding: 2px 8px;
+          border-radius: 4px;
+          background-color: var(--pc-stamp);
+          color: var(--pc-accent);
+          border: 1px solid var(--pc-line);
+          transition: background-color 0.15s, color 0.15s;
+        }
+        .pc-page-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 8px 18px;
+          border-radius: 8px;
+          font-size: 0.875rem;
+          font-weight: 600;
+          font-family: var(--font-postal-body);
+          transition: all 0.15s;
+          border: 1.5px solid var(--pc-line);
+          background: var(--pc-card);
+          color: var(--pc-ink);
+          text-decoration: none;
+        }
+        .pc-page-btn:hover {
+          border-color: var(--pc-accent);
+          color: var(--pc-accent);
+          background: var(--pc-stamp);
+        }
+        .pc-page-btn-disabled {
+          opacity: 0.35;
+          cursor: not-allowed;
+        }
+        .pc-divider {
+          height: 1px;
+          background: linear-gradient(to right, transparent, var(--pc-line), transparent);
+        }
+        .pc-submit-btn {
+          padding: 9px 22px;
+          border-radius: 7px;
+          background: var(--pc-accent);
+          color: white;
+          font-size: 0.85rem;
+          font-weight: 700;
+          font-family: var(--font-postal-body);
+          border: none;
+          cursor: pointer;
+          letter-spacing: 0.03em;
+          transition: background 0.15s;
+        }
+        .pc-submit-btn:hover {
+          background: var(--pc-accent-hover);
+        }
+      `}</style>
 
-        <div className="relative flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-          <div className="space-y-2">
-            <p className="text-xs uppercase tracking-[0.22em] text-[var(--pc-muted)]">
-              Catalogo nacional
-            </p>
-            <h2
-              className="text-4xl text-[var(--pc-ink)] md:text-5xl"
-              style={{ fontFamily: "var(--font-postal-title)" }}
+      <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "40px 24px 60px" }}>
+
+        {/* ── Header ── */}
+        <header style={{ marginBottom: "32px" }}>
+          <p style={{
+            fontSize: "0.7rem",
+            letterSpacing: "0.28em",
+            textTransform: "uppercase",
+            color: "var(--pc-muted-light)",
+            marginBottom: "10px",
+          }}>
+            Catálogo Nacional · SEPOMEX
+          </p>
+
+          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "24px", flexWrap: "wrap" }}>
+            <h1
+              style={{
+                fontFamily: "var(--font-postal-title)",
+                fontSize: "clamp(2.4rem, 5vw, 3.8rem)",
+                color: "var(--pc-ink)",
+                lineHeight: 1.05,
+                margin: 0,
+              }}
             >
-              Codigos postales SEPOMEX
-            </h2>
-            <p
-              className="text-sm text-[var(--pc-muted)] md:text-base"
-              style={{ fontFamily: "var(--font-postal-body)" }}
-            >
-              Explora y filtra por ubicacion con resultados paginados.
-            </p>
+              Códigos Postales
+            </h1>
+
+            <div style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-end",
+              gap: "2px",
+              padding: "12px 20px",
+              borderRadius: "10px",
+              border: "1.5px solid var(--pc-line)",
+              background: "var(--pc-card)",
+              flexShrink: 0,
+            }}>
+              <span style={{ fontSize: "0.65rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--pc-muted-light)" }}>
+                Total registros
+              </span>
+              <span style={{
+                fontFamily: "var(--font-postal-title)",
+                fontSize: "1.9rem",
+                color: "var(--pc-accent)",
+                lineHeight: 1,
+              }}>
+                {result.total.toLocaleString("es-MX")}
+              </span>
+            </div>
           </div>
 
-          <div
-            className="inline-flex w-fit items-baseline gap-2 rounded-xl border border-[var(--pc-line)] bg-[var(--pc-card)] px-4 py-3"
-            style={{ fontFamily: "var(--font-postal-body)" }}
-          >
-            <span className="text-xs uppercase tracking-[0.15em] text-[var(--pc-muted)]">
-              Total
-            </span>
-            <span className="text-xl font-bold text-[var(--pc-ink)]">
-              {result.total.toLocaleString("es-MX")}
-            </span>
-          </div>
-        </div>
-      </section>
+          <div className="pc-divider" style={{ marginTop: "20px" }} />
+        </header>
 
-      <section className="mt-6 rounded-2xl border border-[var(--pc-line)] bg-[var(--pc-card)] p-4 md:p-6">
-        <form method="get" action="/postal-codes" className="space-y-4">
-          <input type="hidden" name="page" value="1" />
-          <input type="hidden" name="limit" value={String(filters.limit)} />
+        {/* ── Filters ── */}
+        <section
+          style={{
+            background: "var(--pc-card)",
+            border: "1.5px solid var(--pc-line)",
+            borderRadius: "14px",
+            padding: "24px",
+            marginBottom: "20px",
+          }}
+        >
+          <form method="get" action="/postal-codes">
+            <input type="hidden" name="page" value="1" />
+            <input type="hidden" name="limit" value={String(filters.limit)} />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
-            <label className="space-y-1">
-              <span
-                className="text-sm text-[var(--pc-muted)]"
-                style={{ fontFamily: "var(--font-postal-body)" }}
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
+              gap: "12px",
+              marginBottom: "16px",
+            }}>
+              {[
+                { name: "estado", label: "Estado", placeholder: "Ej. Jalisco", value: filters.estado },
+                { name: "colonia", label: "Colonia", placeholder: "Ej. Americana", value: filters.colonia },
+                { name: "ciudad", label: "Ciudad", placeholder: "Ej. Guadalajara", value: filters.ciudad },
+                { name: "codigoPostal", label: "Código postal", placeholder: "Ej. 44160", value: filters.codigoPostal, inputMode: "numeric" as const, maxLength: 5 },
+                { name: "nombre", label: "Nombre", placeholder: "Colonia o ciudad", value: filters.nombre },
+              ].map((field) => (
+                <label key={field.name} style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+                  <span style={{ fontSize: "0.72rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--pc-muted)", fontWeight: 600 }}>
+                    {field.label}
+                  </span>
+                  <input
+                    name={field.name}
+                    defaultValue={field.value}
+                    placeholder={field.placeholder}
+                    inputMode={field.inputMode}
+                    maxLength={field.maxLength}
+                    className="pc-input"
+                  />
+                </label>
+              ))}
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <button
+                type="submit"
+                className="pc-submit-btn"
               >
-                Estado
-              </span>
-              <input
-                name="estado"
-                defaultValue={filters.estado}
-                className="w-full rounded border border-[var(--pc-line)] bg-white px-3 py-2 text-[var(--pc-ink)] outline-none transition focus:border-[var(--pc-accent)]"
-                placeholder="Ej. Jalisco"
-              />
-            </label>
+                Buscar
+              </button>
 
-            <label className="space-y-1">
-              <span
-                className="text-sm text-[var(--pc-muted)]"
-                style={{ fontFamily: "var(--font-postal-body)" }}
-              >
-                Colonia
-              </span>
-              <input
-                name="colonia"
-                defaultValue={filters.colonia}
-                className="w-full rounded border border-[var(--pc-line)] bg-white px-3 py-2 text-[var(--pc-ink)] outline-none transition focus:border-[var(--pc-accent)]"
-                placeholder="Ej. Americana"
-              />
-            </label>
-
-            <label className="space-y-1">
-              <span
-                className="text-sm text-[var(--pc-muted)]"
-                style={{ fontFamily: "var(--font-postal-body)" }}
-              >
-                Ciudad
-              </span>
-              <input
-                name="ciudad"
-                defaultValue={filters.ciudad}
-                className="w-full rounded border border-[var(--pc-line)] bg-white px-3 py-2 text-[var(--pc-ink)] outline-none transition focus:border-[var(--pc-accent)]"
-                placeholder="Ej. Guadalajara"
-              />
-            </label>
-
-            <label className="space-y-1">
-              <span
-                className="text-sm text-[var(--pc-muted)]"
-                style={{ fontFamily: "var(--font-postal-body)" }}
-              >
-                Codigo postal
-              </span>
-              <input
-                name="codigoPostal"
-                defaultValue={filters.codigoPostal}
-                className="w-full rounded border border-[var(--pc-line)] bg-white px-3 py-2 text-[var(--pc-ink)] outline-none transition focus:border-[var(--pc-accent)]"
-                placeholder="Ej. 44160"
-                inputMode="numeric"
-                maxLength={5}
-              />
-            </label>
-
-            <label className="space-y-1">
-              <span
-                className="text-sm text-[var(--pc-muted)]"
-                style={{ fontFamily: "var(--font-postal-body)" }}
-              >
-                Nombre
-              </span>
-              <input
-                name="nombre"
-                defaultValue={filters.nombre}
-                className="w-full rounded border border-[var(--pc-line)] bg-white px-3 py-2 text-[var(--pc-ink)] outline-none transition focus:border-[var(--pc-accent)]"
-                placeholder="Colonia o ciudad"
-              />
-            </label>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              type="submit"
-              className="rounded bg-[var(--pc-accent)] px-4 py-2 text-sm font-semibold text-white transition hover:brightness-95"
-              style={{ fontFamily: "var(--font-postal-body)" }}
-            >
-              Filtrar
-            </button>
-            <Link
-              href="/postal-codes"
-              className="rounded border border-[var(--pc-line)] px-4 py-2 text-sm text-[var(--pc-ink)] transition hover:bg-[var(--pc-bg)]"
-              style={{ fontFamily: "var(--font-postal-body)" }}
-            >
-              Limpiar filtros
-            </Link>
-          </div>
-        </form>
-      </section>
-
-      <section className="mt-6 overflow-hidden rounded-2xl border border-[var(--pc-line)] bg-[var(--pc-card)]">
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-sm">
-            <thead className="bg-[var(--pc-bg)]">
-              <tr>
-                <th className="px-4 py-3 text-left font-semibold text-[var(--pc-ink)]">
-                  Codigo postal
-                </th>
-                <th className="px-4 py-3 text-left font-semibold text-[var(--pc-ink)]">
-                  Colonia
-                </th>
-                <th className="px-4 py-3 text-left font-semibold text-[var(--pc-ink)]">
-                  Estado
-                </th>
-                <th className="px-4 py-3 text-left font-semibold text-[var(--pc-ink)]">
-                  Municipio
-                </th>
-                <th className="px-4 py-3 text-left font-semibold text-[var(--pc-ink)]">
-                  Ciudad
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {result.items.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={5}
-                    className="px-4 py-10 text-center text-[var(--pc-muted)]"
-                    style={{ fontFamily: "var(--font-postal-body)" }}
-                  >
-                    No se encontraron codigos postales con esos filtros.
-                  </td>
-                </tr>
-              ) : (
-                result.items.map((item) => (
-                  <tr
-                    key={item.id}
-                    className="border-t border-[var(--pc-line)] odd:bg-white even:bg-[var(--pc-bg)]/45"
-                    style={{ fontFamily: "var(--font-postal-body)" }}
-                  >
-                    <td className="px-4 py-3 font-semibold text-[var(--pc-accent)]">
-                      {item.codigoPostal}
-                    </td>
-                    <td className="px-4 py-3 text-[var(--pc-ink)]">{item.colonia}</td>
-                    <td className="px-4 py-3 text-[var(--pc-ink)]">{item.estado}</td>
-                    <td className="px-4 py-3 text-[var(--pc-ink)]">{item.municipio}</td>
-                    <td className="px-4 py-3 text-[var(--pc-ink)]">{item.ciudad}</td>
-                  </tr>
-                ))
+              {hasActiveFilters && (
+                <Link
+                  href="/postal-codes"
+                  style={{
+                    padding: "9px 18px",
+                    borderRadius: "7px",
+                    border: "1.5px solid var(--pc-line)",
+                    color: "var(--pc-muted)",
+                    fontSize: "0.85rem",
+                    fontWeight: 600,
+                    fontFamily: "var(--font-postal-body)",
+                    textDecoration: "none",
+                    transition: "border-color 0.15s, color 0.15s",
+                  }}
+                >
+                  Limpiar filtros
+                </Link>
               )}
-            </tbody>
-          </table>
-        </div>
-      </section>
+            </div>
+          </form>
+        </section>
 
-      <section
-        className="mt-6 flex items-center gap-3"
-        style={{ fontFamily: "var(--font-postal-body)" }}
-      >
-        {hasPrev ? (
-          <Link
-            href={buildPostalCodesHref(filters, result.page - 1)}
-            className="inline-flex items-center gap-1 rounded border border-[var(--pc-line)] bg-[var(--pc-card)] px-3 py-2 text-sm text-[var(--pc-ink)] transition hover:bg-[var(--pc-bg)]"
+        {/* ── Table ── */}
+        <section
+          style={{
+            background: "var(--pc-card)",
+            border: "1.5px solid var(--pc-line)",
+            borderRadius: "14px",
+            overflow: "hidden",
+            marginBottom: "20px",
+          }}
+        >
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ minWidth: "100%", borderCollapse: "collapse", fontSize: "0.875rem" }}>
+              <thead>
+                <tr style={{ background: "var(--pc-bg)" }}>
+                  {["Código postal", "Colonia", "Estado", "Municipio", "Ciudad"].map((col) => (
+                    <th
+                      key={col}
+                      style={{
+                        padding: "13px 18px",
+                        textAlign: "left",
+                        fontSize: "0.7rem",
+                        letterSpacing: "0.15em",
+                        textTransform: "uppercase",
+                        color: "var(--pc-muted)",
+                        fontWeight: 700,
+                        fontFamily: "var(--font-postal-body)",
+                        borderBottom: "1.5px solid var(--pc-line)",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {col}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {result.items.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={5}
+                      style={{
+                        padding: "48px 18px",
+                        textAlign: "center",
+                        color: "var(--pc-muted-light)",
+                        fontFamily: "var(--font-postal-body)",
+                      }}
+                    >
+                      No se encontraron códigos postales con esos filtros.
+                    </td>
+                  </tr>
+                ) : (
+                  result.items.map((item, i) => (
+                    <tr
+                      key={item.id}
+                      className="pc-row"
+                      style={{
+                        borderTop: i === 0 ? "none" : "1px solid var(--pc-line-light)",
+                        background: i % 2 === 0 ? "var(--pc-card)" : "rgba(250,246,236,0.5)",
+                        fontFamily: "var(--font-postal-body)",
+                      }}
+                    >
+                      <td style={{ padding: "11px 18px" }}>
+                        <span className="pc-badge">{item.codigoPostal}</span>
+                      </td>
+                      <td style={{ padding: "11px 18px", color: "var(--pc-ink)", fontWeight: 600 }}>
+                        {item.colonia}
+                      </td>
+                      <td style={{ padding: "11px 18px", color: "var(--pc-muted)" }}>
+                        {item.estado}
+                      </td>
+                      <td style={{ padding: "11px 18px", color: "var(--pc-muted)" }}>
+                        {item.municipio}
+                      </td>
+                      <td style={{ padding: "11px 18px", color: "var(--pc-muted)" }}>
+                        {item.ciudad}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        {/* ── Pagination ── */}
+        {result.totalPages > 1 && (
+          <nav
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "16px",
+              fontFamily: "var(--font-postal-body)",
+            }}
           >
-            Anterior
-          </Link>
-        ) : (
-          <span className="inline-flex cursor-not-allowed items-center gap-1 rounded border border-[var(--pc-line)] px-3 py-2 text-sm text-[var(--pc-muted)]/60">
-            Anterior
-          </span>
-        )}
+            {hasPrev ? (
+              <Link
+                href={buildPostalCodesHref(filters, result.page - 1)}
+                className="pc-page-btn"
+              >
+                ← Anterior
+              </Link>
+            ) : (
+              <span className="pc-page-btn pc-page-btn-disabled">← Anterior</span>
+            )}
 
-        <span className="text-sm text-[var(--pc-muted)]">
-          Pagina {result.page} de {result.totalPages}
-        </span>
+            <div style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "1px",
+              padding: "6px 16px",
+              borderRadius: "8px",
+              background: "var(--pc-stamp)",
+              border: "1.5px solid var(--pc-line)",
+            }}>
+              <span style={{ fontSize: "0.65rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--pc-muted-light)" }}>
+                Página
+              </span>
+              <span style={{ fontSize: "1rem", fontWeight: 700, color: "var(--pc-ink)" }}>
+                {result.page} <span style={{ color: "var(--pc-muted-light)", fontWeight: 400 }}>/ {result.totalPages}</span>
+              </span>
+            </div>
 
-        {hasNext ? (
-          <Link
-            href={buildPostalCodesHref(filters, result.page + 1)}
-            className="inline-flex items-center gap-1 rounded border border-[var(--pc-line)] bg-[var(--pc-card)] px-3 py-2 text-sm text-[var(--pc-ink)] transition hover:bg-[var(--pc-bg)]"
-          >
-            Siguiente
-          </Link>
-        ) : (
-          <span className="inline-flex cursor-not-allowed items-center gap-1 rounded border border-[var(--pc-line)] px-3 py-2 text-sm text-[var(--pc-muted)]/60">
-            Siguiente
-          </span>
+            {hasNext ? (
+              <Link
+                href={buildPostalCodesHref(filters, result.page + 1)}
+                className="pc-page-btn"
+              >
+                Siguiente →
+              </Link>
+            ) : (
+              <span className="pc-page-btn pc-page-btn-disabled">Siguiente →</span>
+            )}
+          </nav>
         )}
-      </section>
+      </div>
     </main>
   );
 }
