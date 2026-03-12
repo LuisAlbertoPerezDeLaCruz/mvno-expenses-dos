@@ -1,27 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { queryPostalCodes } from "@/lib/postal-codes";
-
-function parseNumber(value: string | null, fallback: number) {
-  if (!value) {
-    return fallback;
-  }
-
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : fallback;
-}
+import {
+  parsePostalCodeFiltersFromSearchParams,
+  queryPostalCodes,
+} from "@/lib/postal-codes";
 
 export async function GET(request: NextRequest) {
   try {
-    const searchParams = request.nextUrl.searchParams;
-    const result = await queryPostalCodes({
-      page: parseNumber(searchParams.get("page"), 1),
-      limit: parseNumber(searchParams.get("limit"), 20),
-      estado: searchParams.get("estado") ?? undefined,
-      colonia: searchParams.get("colonia") ?? undefined,
-      ciudad: searchParams.get("ciudad") ?? undefined,
-      codigoPostal: searchParams.get("codigoPostal") ?? undefined,
-      nombre: searchParams.get("nombre") ?? undefined,
-    });
+    const filters = parsePostalCodeFiltersFromSearchParams(
+      request.nextUrl.searchParams,
+    );
+    const result = await queryPostalCodes(filters);
 
     return NextResponse.json(result);
   } catch (error) {

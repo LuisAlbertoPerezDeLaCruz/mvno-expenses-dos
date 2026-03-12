@@ -19,6 +19,16 @@ export type PostalCodeFilters = {
   nombre?: string;
 };
 
+export type NormalizedPostalCodeFilters = {
+  page: number;
+  limit: number;
+  estado: string;
+  colonia: string;
+  ciudad: string;
+  codigoPostal: string;
+  nombre: string;
+};
+
 export type PostalCodeQueryResult = {
   items: PostalCodeItem[];
   total: number;
@@ -36,26 +46,100 @@ type QueryRow = {
   ciudad: string;
 };
 
-function normalizeText(value: string | undefined, maxLength = 128) {
-  return value?.trim().slice(0, maxLength) || "";
+const DEFAULT_PAGE = 1;
+const DEFAULT_LIMIT = 20;
+const MIN_LIMIT = 1;
+const MAX_LIMIT = 100;
+const MAX_TEXT_LENGTH = 128;
+const POSTAL_CODE_LENGTH = 5;
+
+function normalizeText(value: string | undefined, maxLength = MAX_TEXT_LENGTH) {
+  return value?.trim().slice(0, maxLength) ?? "";
 }
 
 function normalizeCodigoPostal(value: string | undefined) {
-  return (value ?? "").replace(/\D/g, "").slice(0, 5);
+  return (value ?? "").replace(/\D/g, "").slice(0, POSTAL_CODE_LENGTH);
+}
+
+function parsePositiveInt(
+  value: string | undefined,
+  fallback: number,
+  { min, max }: { min?: number; max?: number } = {},
+) {
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed <= 0) {
+    return fallback;
+  }
+
+  if (typeof min === "number" && parsed < min) {
+    return min;
+  }
+
+  if (typeof max === "number" && parsed > max) {
+    return max;
+  }
+
+  return parsed;
+}
+
+export function normalizePostalCodeFilters(
+  filters: PostalCodeFilters,
+): NormalizedPostalCodeFilters {
+  return {
+    page: Math.max(DEFAULT_PAGE, Math.trunc(filters.page ?? DEFAULT_PAGE)),
+    limit: Math.min(
+      MAX_LIMIT,
+      Math.max(MIN_LIMIT, Math.trunc(filters.limit ?? DEFAULT_LIMIT)),
+    ),
+    estado: normalizeText(filters.estado),
+    colonia: normalizeText(filters.colonia),
+    ciudad: normalizeText(filters.ciudad),
+    codigoPostal: normalizeCodigoPostal(filters.codigoPostal),
+    nombre: normalizeText(filters.nombre),
+  };
+}
+
+export function parsePostalCodeFiltersFromSearchParams(
+  searchParams: URLSearchParams,
+): NormalizedPostalCodeFilters {
+  return normalizePostalCodeFilters({
+    page: parsePositiveInt(searchParams.get("page") ?? undefined, DEFAULT_PAGE),
+    limit: parsePositiveInt(searchParams.get("limit") ?? undefined, DEFAULT_LIMIT, {
+      min: MIN_LIMIT,
+      max: MAX_LIMIT,
+    }),
+    estado: searchParams.get("estado") ?? undefined,
+    colonia: searchParams.get("colonia") ?? undefined,
+    ciudad: searchParams.get("ciudad") ?? undefined,
+    codigoPostal: searchParams.get("codigoPostal") ?? undefined,
+    nombre: searchParams.get("nombre") ?? undefined,
+  });
+}
+
+export function buildPostalCodesHref(
+  filters: NormalizedPostalCodeFilters,
+  page: number,
+) {
+  const query = new URLSearchParams();
+  query.set("page", String(Math.max(DEFAULT_PAGE, Math.trunc(page))));
+  query.set("limit", String(filters.limit));
+
+  if (filters.estado) query.set("estado", filters.estado);
+  if (filters.colonia) query.set("colonia", filters.colonia);
+  if (filters.ciudad) query.set("ciudad", filters.ciudad);
+  if (filters.codigoPostal) query.set("codigoPostal", filters.codigoPostal);
+  if (filters.nombre) query.set("nombre", filters.nombre);
+
+  return `/postal-codes?${query.toString()}`;
 }
 
 export async function queryPostalCodes(
   filters: PostalCodeFilters,
 ): Promise<PostalCodeQueryResult> {
-  const page = Math.max(1, Math.trunc(filters.page ?? 1));
-  const limit = Math.min(100, Math.max(1, Math.trunc(filters.limit ?? 20)));
+  const normalized = normalizePostalCodeFilters(filters);
+  const { page, limit, estado, colonia, ciudad, codigoPostal, nombre } =
+    normalized;
   const offset = (page - 1) * limit;
-
-  const estado = normalizeText(filters.estado);
-  const colonia = normalizeText(filters.colonia);
-  const ciudad = normalizeText(filters.ciudad);
-  const nombre = normalizeText(filters.nombre);
-  const codigoPostal = normalizeCodigoPostal(filters.codigoPostal);
 
   const clauses: string[] = [];
   const params: Array<string | number> = [];
